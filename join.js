@@ -1,8 +1,6 @@
-// @ts-nocheck
-// Page helper. Contains only public addresses: no secrets. Do not edit, rename or "improve" this file.
+
 const API = "https://app.kapitrack.site";
-// Timings and the server address can be changed from the page's config file (initPage(CLIENT_ID, {...})). 0 = use the server's value.
-// pixelId = the pixel ID written in the page's own config (PIXEL_ID). With it the pixel starts at once, without waiting for the server. Empty = the server tells the page its pixel (older behaviour).
+
 const options = { serverUrl: API, trackTimeoutMs: 4000, fbpWaitMs: 3000, joinWaitMs: 0, pixelId: "" };
 export function setOptions(o) {
   if (!o) return;
@@ -16,7 +14,7 @@ export function setOptions(o) {
 const AD_PARAMS = ["fbclid", "utm_source", "ad_id", "ad_name", "placement"];
 const state = { slug: "", vid: null, timeoutMs: 5000, fbp: null, joining: false, pxStarted: false, pxLoaded: "", pxReported: false };
 
-// Which client is this?  Order: ?c=<slug> in the address, then the CLIENT_ID written in the page, then /j/<slug> or /<slug> in the path.
+
 export function getSlug(defaultSlug) {
   const u = new URL(window.location.href);
   const ok = (x) => /^[a-z0-9_-]{1,32}$/.test(x);
@@ -39,7 +37,7 @@ function adParams() {
   for (const k of AD_PARAMS) { const v = q.get(k); if (v) o[k] = v.slice(0, 200); }
   return o;
 }
-// Time since first visit (a duration, because phone clocks can be wrong).
+
 function firstSeenAgoMs(slug, fbclid) {
   try {
     const key = "kt_seen_" + slug + "_" + fbclid, now = Date.now(), prev = Number(localStorage.getItem(key));
@@ -50,8 +48,7 @@ function firstSeenAgoMs(slug, fbclid) {
 }
 function pageUrl() { return window.location.href.split("#")[0]; }
 
-// Pixel: PageView only.
-// Tells the server that Meta's script really loaded (once). The pixel may finish loading before the server has answered, so this is retried when the visitor id arrives.
+
 function sendPixelBeacon() {
   if (!state.vid || !state.pxLoaded || state.pxReported) return;
   state.pxReported = true;
@@ -74,7 +71,7 @@ function loadPixel(pixelId) {
   }
   window.fbq("init", pixelId);
   window.fbq("track", "PageView");
-  // the cookie appears a moment later: keep looking for up to 3 seconds
+
   let tries = 0;
   const t = setInterval(() => {
     const v = readCookie("_fbp");
@@ -93,12 +90,12 @@ async function post(path, body, timeoutMs) {
   } finally { clearTimeout(timer); }
 }
 
-// Call once when the page opens.
+
 export async function initPage(defaultSlug, opts) {
   setOptions(opts);
   state.slug = getSlug(defaultSlug);
   if (!state.slug) return state;
-  // The pixel ID written in the page starts the pixel right now: the page does not wait for the server.
+
   if (options.pixelId) loadPixel(options.pixelId);
   const p = adParams();
   const res = await post("/api/track", {
@@ -109,14 +106,12 @@ export async function initPage(defaultSlug, opts) {
   if (res.ok && res.json && res.json.ok) {
     state.vid = res.json.vid || null;
     state.timeoutMs = options.joinWaitMs || (res.json.join_timeout_s || 5) * 1000;
-    if (!options.pixelId && res.json.pixel_id) loadPixel(res.json.pixel_id);     // older pages: the server tells the page its pixel
+    if (!options.pixelId && res.json.pixel_id) loadPixel(res.json.pixel_id);   
     sendPixelBeacon();
   }
   return state;
 }
 
-// Join button: gets the Telegram link; if that is slow or fails, the backup link is used.
-// replace = true (the automatic open): the page is REPLACED in the browser history, so Back does not return to it. The button passes nothing.
 export async function openTelegram(backupLink, replace) {
   if (state.joining) return { redirected: false };
   state.joining = true;
