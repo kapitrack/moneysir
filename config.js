@@ -1,8 +1,8 @@
 
 export const CONFIG = {
-  CLIENT_ID: "CLIENT_ID",
-  PIXEL_ID: "000000000000000",
-  BACKUP_LINK: "https://t.me/+bnbzc3Kn0x44ZTc1",
+  CLIENT_ID: "MONEYBDG",
+  PIXEL_ID: "2257951575603427",
+  BACKUP_LINK: "https://t.me/+TY4jiaLN6Ek4OWVl",
   HELPER_URL: "https://app.kapitrack.site",
 
   CHANNEL_NAME: "MONEY SIR",
