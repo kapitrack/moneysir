@@ -9,7 +9,7 @@ const el = (tag, cls, text) => {
   return n;
 };
 
-// page title + tab icon
+
 if (has(CONFIG.PAGE_TITLE)) document.title = CONFIG.PAGE_TITLE;
 if (has(CONFIG.FAVICON_URL) || has(CONFIG.FAVICON_EMOJI)) {
   const link = document.createElement("link");
@@ -23,7 +23,7 @@ if (has(CONFIG.FAVICON_URL) || has(CONFIG.FAVICON_EMOJI)) {
   document.head.appendChild(link);
 }
 
-// state
+
 const ready = { current: null };
 const timer = { current: null };
 let started = false;
@@ -44,7 +44,7 @@ const startJoin = async (auto) => {
   if (!r || !r.redirected) setWorking(false);
 };
 
-// build the page
+
 const root = document.getElementById("root");
 const card = el("section", "card");
 
@@ -91,7 +91,7 @@ if (has(CONFIG.FOOTER_TEXT) || has(CONFIG.FOOTER_LINK_TEXT)) {
   root.appendChild(foot);
 }
 
-// once-only start
+
 if (!started) {
   started = true;
   ready.current = initPage(CONFIG.CLIENT_ID, {
